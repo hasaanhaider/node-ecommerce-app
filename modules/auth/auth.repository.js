@@ -23,3 +23,14 @@ exports.findUserByEmail = async (email) => {
         throw error;
     }
 }
+
+exports.findUserById = async (id) => {
+    try {
+        const user = await prisma.user.findUnique({ 
+            where: { id } 
+        });
+        return user;
+    } catch (error) {
+        throw error;
+    }
+}

@@ -19,3 +19,21 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.userInfo = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    console.log(req.user);
+
+    const userEmail = req.user.email;
+
+    const user = await service.userInfo(userEmail);
+
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};

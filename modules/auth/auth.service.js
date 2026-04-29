@@ -49,3 +49,15 @@ exports.login = async (email, password) => {
     return { token, user };
   } catch (error) {}
 };
+
+
+exports.userInfo = async (userId) => {
+  try{
+    const user = await authRepository.findUserByEmail(userId);
+    if (!user) throw new ApiError(404, "User not found");
+    return user;
+
+  }catch(error){
+    throw error;
+  }
+}
