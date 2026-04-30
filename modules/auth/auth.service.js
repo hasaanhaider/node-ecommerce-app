@@ -1,5 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const sendEmail = require("../../utils/email").sendEmail;
+const prisma = require("../../config/db");
 const authRepository = require("./auth.repository");
 const ApiError = require("../../utils/ApiError");
 const { user } = require("../../config/db");
@@ -11,7 +14,8 @@ exports.register = async (userData) => {
 
     // normalize naming
     const password = userData.password;
-    const confirmPassword = userData.confirmPassword || userData.password_confirmation;
+    const confirmPassword =
+      userData.confirmPassword || userData.password_confirmation;
 
     if (password !== confirmPassword) {
       throw new ApiError(400, "Passwords do not match");
@@ -27,7 +31,6 @@ exports.register = async (userData) => {
     });
 
     return newUser;
-
   } catch (error) {
     throw error;
   }
@@ -50,14 +53,79 @@ exports.login = async (email, password) => {
   } catch (error) {}
 };
 
-
 exports.userInfo = async (userId) => {
-  try{
+  try {
     const user = await authRepository.findUserByEmail(userId);
     if (!user) throw new ApiError(404, "User not found");
     return user;
-
-  }catch(error){
+  } catch (error) {
     throw error;
   }
-}
+};
+
+exports.forgotPassword = async (email) => {
+  try {
+    const user = await authRepository.findUserByEmail(email);
+    if (!user) throw new ApiError(404, "User not found");
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        resetCode: code,
+        resetCodeExpiry: new Date(resetTokenExpiry),
+      },
+    });
+
+    await sendEmail(
+      email,
+      "Password Reset Code",
+      `Your password reset code is: ${code}`,
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.verifyCode = async (email, code) => {
+  try {
+    const user = await authRepository.findUserByEmail(email);
+    if (!user) throw new ApiError(404, "User not found");
+
+    if (user.resetCode !== code) {
+      throw new ApiError(400, "Invalid reset code");
+    }
+    if (user.resetCodeExpiry < new Date()) {
+      throw new ApiError(400, "Reset code has expired");
+    }
+    return { message: "Code verified" };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.resetPassword = async (email, code, newPassword) => {
+  try {
+    const user = await authRepository.findUserByEmail(email);
+
+    if (!user) throw new ApiError(404, "User not found");
+    if (user.resetCode !== code) throw new ApiError(400, "Invalid reset code");
+    if (user.resetCodeExpiry < new Date())
+      throw new ApiError(400, "Reset code has expired");
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        password: hashedPassword,
+        resetCode: null,
+        resetCodeExpiry: null,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};

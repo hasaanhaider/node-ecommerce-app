@@ -34,3 +34,15 @@ exports.findUserById = async (id) => {
         throw error;
     }
 }
+
+exports.updateUser = async (email, updateData) => {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { email },
+            data: updateData,
+        });
+        return updatedUser;
+    } catch (error) {
+        throw error;
+    }
+};

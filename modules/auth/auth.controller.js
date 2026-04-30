@@ -37,3 +37,33 @@ exports.userInfo = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    await service.forgotPassword(email);
+    res.json({ message: "Password reset code sent to email" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.verifyCode = async (req, res, next) => {
+  try {
+    const { email, code } = req.body;
+    await service.verifyCode(email, code);
+    res.json({ message: "Reset code verified successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    await service.resetPassword(email, code, newPassword);
+    res.json({ message: "Password reset successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
