@@ -1,48 +1,58 @@
-const prisma = require('../../config/db'); // ✅ IMPORTANT
+const prisma = require("../../config/db"); // ✅ IMPORTANT
 
-exports.createUser  = async (userData) => {
-    try {
-        const user = await prisma.user.create({
-            data: userData
-        });
-        return user;
-    }
-    catch (error) {
-        throw error;
-    }
+exports.createUser = async (userData) => {
+  try {
+    const user = await prisma.user.create({
+      data: userData,
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
 };
 
 exports.findUserByEmail = async (email) => {
-    try {
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-        return user;
-        
-    } catch (error) {
-        throw error;
-    }
-}
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
 
 exports.findUserById = async (id) => {
-    try {
-        const user = await prisma.user.findUnique({ 
-            where: { id } 
-        });
-        return user;
-    } catch (error) {
-        throw error;
-    }
-}
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
 
 exports.updateUser = async (email, updateData) => {
-    try {
-        const updatedUser = await prisma.user.update({
-            where: { email },
-            data: updateData,
-        });
-        return updatedUser;
-    } catch (error) {
-        throw error;
-    }
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { email },
+      data: updateData,
+    });
+    return updatedUser;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.updateUserProfile = async (email, updateData) => {
+  try {
+    const updateUser = await prisma.user.update({
+      where: { email },
+      data: updateData,
+    });
+    return updateUser;
+  } catch (error) {
+    throw error;
+  }
 };

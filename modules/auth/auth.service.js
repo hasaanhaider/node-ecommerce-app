@@ -129,3 +129,35 @@ exports.resetPassword = async (email, code, newPassword) => {
     throw error;
   }
 };
+
+
+exports.updateProfile = async (userEmail, updateData) => {
+
+  try {
+    const user = await authRepository.findUserByEmail(userEmail);
+    if(!user) throw new ApiError(404, "User not found");
+    const updatedUser = await authRepository.updateUserProfile(userEmail, updateData);
+    return updatedUser;
+  } catch (error) {
+    throw error;
+  }
+
+}
+
+
+exports.deleteAccount = async (userEmail, password) => {
+  try {
+    const user = await authRepository.findUserByEmail(userEmail);
+    if(!user) throw new ApiError(404, "User not found");
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) throw new ApiError(400, "Invalid password");
+    await prisma.user.delete({
+      where: { email: userEmail },
+    });
+
+    return { message: "Account deleted successfully" };
+  } catch (error) {
+    throw error;
+  }
+};

@@ -5,7 +5,10 @@ const { authenticate } = require("../../middlewares/auth.middleware");
 
 router.post("/register", controller.register);
 router.post("/login", controller.login);
+
 router.get("/me", authenticate, controller.userInfo);
+router.put("/update-profile", authenticate, controller.updateProfile);
+router.delete("/delete-account", authenticate, controller.deleteAccount);
 
 router.post("/forgot-password", controller.forgotPassword);
 router.post('/verify-code', controller.verifyCode);
