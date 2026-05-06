@@ -1,11 +1,11 @@
 import React from "react";
 import { Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import AuthLayout from "../authLayout"; 
+import GuestLayout from "../GuestLayout"; 
 
 const ForgotPassword = () => {
   return (
-    <AuthLayout title="Forgot Password" description="Enter your email to receive a password reset link.">
+    <GuestLayout title="Forgot Password" description="Enter your email to receive a password reset link.">
     <form className="space-y-5">
       {/* Email */}
       <div>
@@ -43,7 +43,7 @@ const ForgotPassword = () => {
 
 
     </form>
-    </AuthLayout>
+    </GuestLayout>
   );
 };
 

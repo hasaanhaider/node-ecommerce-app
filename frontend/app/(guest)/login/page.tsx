@@ -1,12 +1,39 @@
-import React from "react";
+'use client'
+import React, { useState } from "react";
 import { Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import AuthLayout from "../authLayout";
+import GuestLayout from "../GuestLayout";
+import { useAuthStore } from "@/store/authStore";
+import { useRouter } from "next/dist/client/components/navigation";
 
 const Login = () => {
+  const { login,  error, loading, success } = useAuthStore();
+  const [ form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+    const router = useRouter();
+  
+  const handleSubmit = async (e: React.FormEvent) => {    e.preventDefault();
+    await login(form);
+    router.push("/dashboard");
+  }
+
   return (
-    <AuthLayout title="Sign In" description="Enter your credentials to access your account.">
-      <form className="space-y-5">
+    <GuestLayout title="Sign In" description="Enter your credentials to access your account.">
+      {error && (
+        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700 shadow-sm">
+          <div className="mt-0.5 h-2 w-2 rounded-full bg-red-500"></div>
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
+      {success && (
+        <div className="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700 shadow-sm">
+          <div className="mt-0.5 h-2 w-2 rounded-full bg-green-500"></div>
+          <p className="text-sm font-medium">{success}</p>
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Email */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -21,6 +48,8 @@ const Login = () => {
             type="email"
             placeholder="you@example.com"
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 text-black bg-white focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
         </div>
       </div>
@@ -39,6 +68,8 @@ const Login = () => {
             type="password"
             placeholder="••••••••"
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 text-black bg-white focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
         </div>
       </div>
@@ -74,7 +105,7 @@ const Login = () => {
         </Link>
       </p>
     </form>
-      </AuthLayout>
+      </GuestLayout>
   );
 };
 

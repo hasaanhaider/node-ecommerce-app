@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Mail, Lock, User } from "lucide-react";
-import AuthLayout from "../authLayout";
+import { Mail, Lock, User, Router } from "lucide-react";
+import GuestLayout from "../GuestLayout";
 import Link from "next/link";
 import { useAuthStore } from "../../../store/authStore";
+import { useRouter } from "next/dist/client/components/navigation";
 
 const Register = () => {
   const { register, error, loading, success } = useAuthStore();
@@ -14,13 +15,16 @@ const Register = () => {
     password_confirmation: "",
   });
 
+  const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await register(form);
+    router.push("/login");
   };
 
   return (
-    <AuthLayout
+    <GuestLayout
       title="Create Account"
       description="Fill in the details below to create your account."
     >
@@ -142,7 +146,7 @@ const Register = () => {
           </Link>
         </p>
       </form>
-    </AuthLayout>
+    </GuestLayout>
   );
 };
 
